@@ -341,9 +341,9 @@ const ALIGN_DEFAULTS = {
   by: -0.4,
   bz: 0.3,
   bs: 1,
-  rot: 52,
-  cy: 13,
-  cz: 10.1,
+  rot: 0,
+  cy: 9.6,
+  cz: 7.5,
   fov: 34,
 };
 
@@ -352,16 +352,16 @@ const ALIGN_DEFAULTS_MOBILE = {
   by: -0.4,
   bz: 0.3,
   bs: 1,
-  rot: 52,
-  cy: 13,
-  cz: 10.1,
+  rot: 0,
+  cy: 9.6,
+  cz: 7.5,
   fov: 34,
 };
 
 type AlignValues = typeof ALIGN_DEFAULTS;
 const ALIGN_KEY = "board-align";
 // Bump when baked defaults change so stale localStorage is discarded.
-const ALIGN_VERSION = 8;
+const ALIGN_VERSION = 9;
 
 function defaultsFor(isMobile: boolean) {
   return isMobile ? { ...ALIGN_DEFAULTS_MOBILE } : { ...ALIGN_DEFAULTS };
@@ -423,14 +423,10 @@ function Scene({
         <shadowMaterial transparent opacity={0.22} />
       </mesh>
 
-      {/* Soft grass discs that blend the grid into the painted circular arena. */}
+      {/* Soft grass tint that blends the grid into the painted field. */}
       <mesh position={[0, 0.396, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <circleGeometry args={[BOARD_HALF_EXTENT * 1.9, 64]} />
-        <meshBasicMaterial color="#8fb43a" transparent opacity={0.28} depthWrite={false} />
-      </mesh>
-      <mesh position={[0, 0.398, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <circleGeometry args={[BOARD_HALF_EXTENT * 1.35, 64]} />
-        <meshBasicMaterial color="#6f8f2c" transparent opacity={0.22} depthWrite={false} />
+        <planeGeometry args={[BOARD_HALF_EXTENT * 3.2, BOARD_HALF_EXTENT * 3.2]} />
+        <meshBasicMaterial color="#8fb43a" transparent opacity={0.14} depthWrite={false} />
       </mesh>
 
       <BoardLines />
@@ -494,10 +490,10 @@ function safeInsets(w: number, h: number) {
   });
 
   // Never let the HUD squeeze the stage below a usable size.
-  inset.top = Math.min(inset.top, h * 0.3);
-  inset.bottom = Math.min(inset.bottom, h * 0.3);
-  inset.left = Math.min(inset.left, w * 0.28);
-  inset.right = Math.min(inset.right, w * 0.28);
+  inset.top = Math.min(inset.top, h * 0.16);
+  inset.bottom = Math.min(inset.bottom, h * 0.16);
+  inset.left = Math.min(inset.left, w * 0.1);
+  inset.right = Math.min(inset.right, w * 0.1);
   return inset;
 }
 
@@ -533,7 +529,8 @@ function AutoFit({
       // plane is ignored), padded for piece height and base radius.
       const half = 2 * SPACING + 0.55;
       const scale = group.getWorldScale(new THREE.Vector3()).x;
-      const radius = Math.hypot(half, half, 0.55) * scale;
+      // Axis-aligned board: fit the square snugly instead of its full diagonal.
+      const radius = Math.hypot(half * 1.05, 0.55) * scale;
       const sphere = new THREE.Sphere(
         group.localToWorld(new THREE.Vector3(0, 0.75, 0)),
         radius,

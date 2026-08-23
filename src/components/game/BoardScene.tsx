@@ -285,10 +285,7 @@ function Node({
 
   return (
     <group>
-      <mesh position={[pos[0], 0.404, pos[2]]} rotation={[-Math.PI / 2, 0, 0]}>
-        <circleGeometry args={[0.085, 20]} />
-        <meshStandardMaterial color="#3f2412" roughness={0.9} />
-      </mesh>
+      {/* Grid dots/lines come from the painted backdrop; nothing drawn here. */}
       <mesh
         ref={ring}
         position={[pos[0], 0.408, pos[2]]}

@@ -17,39 +17,6 @@ export function nodePosition(i: number): [number, number, number] {
   return [(c - 2) * SPACING, 0.41, (r - 2) * SPACING];
 }
 
-function BoardLines() {
-  const segments = useMemo(() => {
-    const seen = new Set<string>();
-    const out: Array<{ a: number; b: number }> = [];
-    for (let i = 0; i < SIZE * SIZE; i++) {
-      for (const n of neighbors(i)) {
-        const key = i < n ? `${i}-${n}` : `${n}-${i}`;
-        if (seen.has(key)) continue;
-        seen.add(key);
-        out.push({ a: i, b: n });
-      }
-    }
-    return out;
-  }, []);
-
-  return (
-    <group>
-      {segments.map(({ a, b }, k) => {
-        const pa = new THREE.Vector3(...nodePosition(a));
-        const pb = new THREE.Vector3(...nodePosition(b));
-        const mid = pa.clone().add(pb).multiplyScalar(0.5);
-        const len = pa.distanceTo(pb);
-        const angle = Math.atan2(pb.z - pa.z, pb.x - pa.x);
-        return (
-          <mesh key={k} position={[mid.x, 0.402, mid.z]} rotation={[0, -angle, 0]}>
-            <boxGeometry args={[len, 0.008, 0.03]} />
-            <meshStandardMaterial color="#4a2c12" roughness={0.95} />
-          </mesh>
-        );
-      })}
-    </group>
-  );
-}
 
 /** Smoothly eases a piece to its node and adds a gentle idle bob when selected. */
 function PieceBase({
@@ -86,20 +53,6 @@ function PieceBase({
 }
 
 /** Round wooden plinth every piece stands on, as in the reference art. */
-function Plinth() {
-  return (
-    <group>
-      <mesh castShadow receiveShadow position={[0, 0.03, 0]}>
-        <cylinderGeometry args={[0.235, 0.245, 0.06, 24]} />
-        <meshStandardMaterial color="#3d2110" roughness={0.6} />
-      </mesh>
-      <mesh position={[0, 0.065, 0]}>
-        <cylinderGeometry args={[0.205, 0.205, 0.02, 24]} />
-        <meshStandardMaterial color="#5c3215" roughness={0.5} />
-      </mesh>
-    </group>
-  );
-}
 
 /** Lion piece rendered from the GLB, keeping its original materials. */
 function LionModel({ selected }: { selected: boolean }) {
@@ -181,7 +134,6 @@ useGLTF.preload(lionAsset.url);
 function Tiger({ position, selected }: { position: [number, number, number]; selected: boolean }) {
   return (
     <PieceBase position={position} selected={selected}>
-      <Plinth />
       <LionModel selected={selected} />
     </PieceBase>
   );
@@ -193,7 +145,6 @@ function Goat({ position, selected }: { position: [number, number, number]; sele
   const shade = selected ? "#cbe89a" : "#dedbd4";
   return (
     <PieceBase position={position} selected={selected}>
-      <Plinth />
       {/* torso */}
       <mesh castShadow position={[0, 0.28, -0.02]} rotation={[Math.PI / 2, 0, 0]}>
         <capsuleGeometry args={[0.12, 0.24, 6, 12]} />
@@ -285,10 +236,7 @@ function Node({
 
   return (
     <group>
-      <mesh position={[pos[0], 0.404, pos[2]]} rotation={[-Math.PI / 2, 0, 0]}>
-        <circleGeometry args={[0.085, 20]} />
-        <meshStandardMaterial color="#3f2412" roughness={0.9} />
-      </mesh>
+      {/* Grid dots/lines come from the painted backdrop; nothing drawn here. */}
       <mesh
         ref={ring}
         position={[pos[0], 0.408, pos[2]]}
@@ -340,10 +288,10 @@ const ALIGN_DEFAULTS = {
   bx: -0.1,
   by: -0.4,
   bz: 0.3,
-  bs: 1,
+  bs: 1.28,
   rot: 0,
-  cy: 9.6,
-  cz: 7.5,
+  cy: 8.4,
+  cz: 6.6,
   fov: 34,
 };
 
@@ -351,17 +299,17 @@ const ALIGN_DEFAULTS_MOBILE = {
   bx: -0.1,
   by: -0.4,
   bz: 0.3,
-  bs: 1,
+  bs: 1.28,
   rot: 0,
-  cy: 9.6,
-  cz: 7.5,
+  cy: 8.4,
+  cz: 6.6,
   fov: 34,
 };
 
 type AlignValues = typeof ALIGN_DEFAULTS;
 const ALIGN_KEY = "board-align";
 // Bump when baked defaults change so stale localStorage is discarded.
-const ALIGN_VERSION = 9;
+const ALIGN_VERSION = 11;
 
 function defaultsFor(isMobile: boolean) {
   return isMobile ? { ...ALIGN_DEFAULTS_MOBILE } : { ...ALIGN_DEFAULTS };
@@ -423,13 +371,6 @@ function Scene({
         <shadowMaterial transparent opacity={0.22} />
       </mesh>
 
-      {/* Soft grass tint that blends the grid into the painted field. */}
-      <mesh position={[0, 0.396, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[BOARD_HALF_EXTENT * 3.2, BOARD_HALF_EXTENT * 3.2]} />
-        <meshBasicMaterial color="#8fb43a" transparent opacity={0.14} depthWrite={false} />
-      </mesh>
-
-      <BoardLines />
 
 
       {board.map((_, i) => (
@@ -806,7 +747,7 @@ export default function BoardScene(props: BoardSceneProps) {
         dpr={[1, 2]}
       >
         {panel ? <CameraRig align={align} onCameraChange={patchAlign} /> : null}
-        <AutoFit groupRef={boardRef} align={align} enabled={!panel} />
+        <AutoFit groupRef={boardRef} align={align} enabled={false} />
         <ambientLight intensity={0.42} color="#fff0d6" />
         <hemisphereLight args={["#d4eeff", "#5a8a3a", 0.85]} />
         {/* warm key sun — stronger for deeper shadows */}

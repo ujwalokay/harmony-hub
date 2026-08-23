@@ -490,10 +490,10 @@ function safeInsets(w: number, h: number) {
   });
 
   // Never let the HUD squeeze the stage below a usable size.
-  inset.top = Math.min(inset.top, h * 0.3);
-  inset.bottom = Math.min(inset.bottom, h * 0.3);
-  inset.left = Math.min(inset.left, w * 0.28);
-  inset.right = Math.min(inset.right, w * 0.28);
+  inset.top = Math.min(inset.top, h * 0.16);
+  inset.bottom = Math.min(inset.bottom, h * 0.16);
+  inset.left = Math.min(inset.left, w * 0.1);
+  inset.right = Math.min(inset.right, w * 0.1);
   return inset;
 }
 

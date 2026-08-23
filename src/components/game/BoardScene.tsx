@@ -288,10 +288,10 @@ const ALIGN_DEFAULTS = {
   bx: -0.1,
   by: -0.4,
   bz: 0.3,
-  bs: 1.63,
+  bs: 1.28,
   rot: 0,
-  cy: 9.6,
-  cz: 7.5,
+  cy: 8.4,
+  cz: 6.6,
   fov: 34,
 };
 
@@ -299,10 +299,10 @@ const ALIGN_DEFAULTS_MOBILE = {
   bx: -0.1,
   by: -0.4,
   bz: 0.3,
-  bs: 1.63,
+  bs: 1.28,
   rot: 0,
-  cy: 9.6,
-  cz: 7.5,
+  cy: 8.4,
+  cz: 6.6,
   fov: 34,
 };
 

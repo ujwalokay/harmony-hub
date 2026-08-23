@@ -10,8 +10,10 @@ export interface GameState {
   history: string[];
 }
 
-export const SIZE = 5;
-export const TOTAL_GOATS = 20;
+export const SIZE: number = 7;
+export const TOTAL_GOATS = SIZE === 5 ? 20 : 28;
+/** Goats a tiger side must capture to win. */
+export const CAPTURES_TO_WIN = SIZE === 5 ? 5 : 8;
 
 export const idx = (r: number, c: number) => r * SIZE + c;
 export const rc = (i: number) => [Math.floor(i / SIZE), i % SIZE] as const;
@@ -62,16 +64,18 @@ export function jumps(i: number): Array<[number, number]> {
 
 export const LABELS = (() => {
   const l: string[] = [];
-  for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) l.push(`${"ABCDE"[c]}${r + 1}`);
+  for (let r = 0; r < SIZE; r++)
+    for (let c = 0; c < SIZE; c++) l.push(`${"ABCDEFGHIJ"[c]}${r + 1}`);
   return l;
 })();
 
 export function createGame(): GameState {
   const board: Cell[] = Array(SIZE * SIZE).fill("empty");
+  const last = SIZE - 1;
   board[idx(0, 0)] = "tiger";
-  board[idx(0, 4)] = "tiger";
-  board[idx(4, 0)] = "tiger";
-  board[idx(4, 4)] = "tiger";
+  board[idx(0, last)] = "tiger";
+  board[idx(last, 0)] = "tiger";
+  board[idx(last, last)] = "tiger";
   return {
     board,
     turn: "goat",
@@ -102,7 +106,7 @@ export function tigersBlocked(state: GameState): boolean {
 }
 
 function evaluate(state: GameState): GameState {
-  if (state.goatsCaptured >= 5) return { ...state, winner: "tiger" };
+  if (state.goatsCaptured >= CAPTURES_TO_WIN) return { ...state, winner: "tiger" };
   if (tigersBlocked(state)) return { ...state, winner: "goat" };
   return state;
 }

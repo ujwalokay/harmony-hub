@@ -529,7 +529,8 @@ function AutoFit({
       // plane is ignored), padded for piece height and base radius.
       const half = 2 * SPACING + 0.55;
       const scale = group.getWorldScale(new THREE.Vector3()).x;
-      const radius = Math.hypot(half, half, 0.55) * scale;
+      // Axis-aligned board: fit the square snugly instead of its full diagonal.
+      const radius = Math.hypot(half * 1.05, 0.55) * scale;
       const sphere = new THREE.Sphere(
         group.localToWorld(new THREE.Vector3(0, 0.75, 0)),
         radius,

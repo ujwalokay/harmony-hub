@@ -288,7 +288,7 @@ const ALIGN_DEFAULTS = {
   bx: -0.1,
   by: -0.4,
   bz: 0.3,
-  bs: 1,
+  bs: 1.28,
   rot: 0,
   cy: 9.6,
   cz: 7.5,
@@ -299,7 +299,7 @@ const ALIGN_DEFAULTS_MOBILE = {
   bx: -0.1,
   by: -0.4,
   bz: 0.3,
-  bs: 1,
+  bs: 1.28,
   rot: 0,
   cy: 9.6,
   cz: 7.5,
@@ -309,7 +309,7 @@ const ALIGN_DEFAULTS_MOBILE = {
 type AlignValues = typeof ALIGN_DEFAULTS;
 const ALIGN_KEY = "board-align";
 // Bump when baked defaults change so stale localStorage is discarded.
-const ALIGN_VERSION = 9;
+const ALIGN_VERSION = 10;
 
 function defaultsFor(isMobile: boolean) {
   return isMobile ? { ...ALIGN_DEFAULTS_MOBILE } : { ...ALIGN_DEFAULTS };

@@ -17,6 +17,7 @@ import {
   placeGoat,
   tigerAiMove,
   TOTAL_GOATS,
+  CAPTURES_TO_WIN,
   type GameState,
 } from "@/lib/baghchal";
 import { Button } from "@/components/ui/button";
@@ -186,7 +187,7 @@ function Index() {
             side="tiger"
             title="TIGERS"
             value={`${tigersLeft} Tigers`}
-            objective="Capture 5 Goats"
+            objective={`Capture ${CAPTURES_TO_WIN} Goats`}
             active={game.turn === "tiger"}
           />
           <SidePanel
@@ -248,7 +249,7 @@ function Index() {
               Tigers move along lines, or jump straight over a single adjacent goat into the empty
               node beyond it to capture that goat.
             </li>
-            <li>Tigers win by capturing 5 goats. Goats win by blocking every tiger move.</li>
+            <li>Tigers win by capturing {CAPTURES_TO_WIN} goats. Goats win by blocking every tiger move.</li>
           </ul>
         </DialogContent>
       </Dialog>

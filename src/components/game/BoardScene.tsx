@@ -10,6 +10,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 const lionAsset = { url: "/models/lion.glb" };
 
 const SPACING = 1.15;
+const BOARD_HALF_EXTENT = ((SIZE - 1) / 2) * SPACING;
 
 export function nodePosition(i: number): [number, number, number] {
   const [r, c] = rc(i);

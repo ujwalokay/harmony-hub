@@ -28,7 +28,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import arenaSkyUrl from "@/assets/valley-bg.jpg";
+import valleyBgAsset from "@/assets/valley-bg.jpg.asset.json";
+const arenaSkyUrl = valleyBgAsset.url;
 
 const BoardScene = lazy(() => import("@/components/game/BoardScene"));
 

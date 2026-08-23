@@ -423,14 +423,10 @@ function Scene({
         <shadowMaterial transparent opacity={0.22} />
       </mesh>
 
-      {/* Soft grass discs that blend the grid into the painted circular arena. */}
+      {/* Soft grass tint that blends the grid into the painted field. */}
       <mesh position={[0, 0.396, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <circleGeometry args={[BOARD_HALF_EXTENT * 1.9, 64]} />
-        <meshBasicMaterial color="#8fb43a" transparent opacity={0.28} depthWrite={false} />
-      </mesh>
-      <mesh position={[0, 0.398, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <circleGeometry args={[BOARD_HALF_EXTENT * 1.35, 64]} />
-        <meshBasicMaterial color="#6f8f2c" transparent opacity={0.22} depthWrite={false} />
+        <planeGeometry args={[BOARD_HALF_EXTENT * 3.2, BOARD_HALF_EXTENT * 3.2]} />
+        <meshBasicMaterial color="#8fb43a" transparent opacity={0.14} depthWrite={false} />
       </mesh>
 
       <BoardLines />

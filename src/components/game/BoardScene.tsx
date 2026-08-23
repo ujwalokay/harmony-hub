@@ -181,7 +181,6 @@ useGLTF.preload(lionAsset.url);
 function Tiger({ position, selected }: { position: [number, number, number]; selected: boolean }) {
   return (
     <PieceBase position={position} selected={selected}>
-      <Plinth />
       <LionModel selected={selected} />
     </PieceBase>
   );
@@ -193,7 +192,6 @@ function Goat({ position, selected }: { position: [number, number, number]; sele
   const shade = selected ? "#cbe89a" : "#dedbd4";
   return (
     <PieceBase position={position} selected={selected}>
-      <Plinth />
       {/* torso */}
       <mesh castShadow position={[0, 0.28, -0.02]} rotation={[Math.PI / 2, 0, 0]}>
         <capsuleGeometry args={[0.12, 0.24, 6, 12]} />
@@ -420,13 +418,6 @@ function Scene({
         <shadowMaterial transparent opacity={0.22} />
       </mesh>
 
-      {/* Soft grass tint that blends the grid into the painted field. */}
-      <mesh position={[0, 0.396, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[BOARD_HALF_EXTENT * 3.2, BOARD_HALF_EXTENT * 3.2]} />
-        <meshBasicMaterial color="#8fb43a" transparent opacity={0.14} depthWrite={false} />
-      </mesh>
-
-      <BoardLines />
 
 
       {board.map((_, i) => (

@@ -20,7 +20,7 @@ export const BOARD_ROTATION_DEG = 52;
 export interface BoardNode {
   /** Index into the game board array — the node id used by game state. */
   id: number;
-  /** Normalized integer board coordinates, -2..2. */
+  /** Normalized integer board coordinates, centered on 0. */
   u: number;
   v: number;
   /** Fixed local position inside BoardGroup. */
@@ -29,8 +29,9 @@ export interface BoardNode {
 
 export const NODES: BoardNode[] = Array.from({ length: SIZE * SIZE }, (_, id) => {
   const [r, c] = rc(id);
-  const u = c - 2;
-  const v = r - 2;
+  const center = (SIZE - 1) / 2;
+  const u = c - center;
+  const v = r - center;
   return { id, u, v, position: new THREE.Vector3(u * SPACING, BOARD_Y, v * SPACING) };
 });
 
@@ -60,6 +61,6 @@ export const EDGES: Array<{ a: number; b: number }> = (() => {
 })();
 
 /** Local-space extents of the playable board (ignores scenery/shadow planes). */
-export const BOARD_HALF_EXTENT = 2 * SPACING;
+export const BOARD_HALF_EXTENT = ((SIZE - 1) / 2) * SPACING;
 /** Tallest piece above the board plane, used when fitting the camera. */
 export const PIECE_HEIGHT = 0.75;

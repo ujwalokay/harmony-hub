@@ -747,7 +747,7 @@ export default function BoardScene(props: BoardSceneProps) {
         dpr={[1, 2]}
       >
         {panel ? <CameraRig align={align} onCameraChange={patchAlign} /> : null}
-        <AutoFit groupRef={boardRef} align={align} enabled={!panel} />
+        <AutoFit groupRef={boardRef} align={align} enabled={false} />
         <ambientLight intensity={0.42} color="#fff0d6" />
         <hemisphereLight args={["#d4eeff", "#5a8a3a", 0.85]} />
         {/* warm key sun — stronger for deeper shadows */}

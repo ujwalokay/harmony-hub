@@ -10,7 +10,7 @@ export interface GameState {
   history: string[];
 }
 
-export const SIZE: number = 7;
+export const SIZE: number = 5;
 export const TOTAL_GOATS = SIZE === 5 ? 20 : 28;
 /** Goats a tiger side must capture to win. */
 export const CAPTURES_TO_WIN = SIZE === 5 ? 5 : 8;

@@ -287,8 +287,8 @@ export interface BoardSceneProps {
 const ALIGN_DEFAULTS = {
   bx: -0.1,
   by: -0.4,
-  bz: 0.3,
-  bs: 1.28,
+  bz: 0.0,
+  bs: 0.85,
   rot: 0,
   cy: 8.4,
   cz: 6.6,
@@ -299,7 +299,7 @@ const ALIGN_DEFAULTS_MOBILE = {
   bx: -0.1,
   by: -0.4,
   bz: 0.3,
-  bs: 1.28,
+  bs: 0.85,
   rot: 0,
   cy: 8.4,
   cz: 6.6,
@@ -309,7 +309,7 @@ const ALIGN_DEFAULTS_MOBILE = {
 type AlignValues = typeof ALIGN_DEFAULTS;
 const ALIGN_KEY = "board-align";
 // Bump when baked defaults change so stale localStorage is discarded.
-const ALIGN_VERSION = 11;
+const ALIGN_VERSION = 12;
 
 function defaultsFor(isMobile: boolean) {
   return isMobile ? { ...ALIGN_DEFAULTS_MOBILE } : { ...ALIGN_DEFAULTS };

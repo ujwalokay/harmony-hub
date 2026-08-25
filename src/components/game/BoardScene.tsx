@@ -84,7 +84,11 @@ function BoardModel() {
 
     // Straighten the model, then measure it in that straightened frame.
     const aligned = new THREE.Group();
-    aligned.rotation.y = bestYaw(clone);
+    aligned.rotation.set(
+      (tune("mrx", 0) * Math.PI) / 180,
+      bestYaw(clone) + (tune("mry", 0) * Math.PI) / 180,
+      (tune("mrz", 0) * Math.PI) / 180,
+    );
     aligned.add(clone);
     aligned.updateWorldMatrix(true, true);
 
@@ -95,17 +99,18 @@ function BoardModel() {
     box.getCenter(center);
 
     const half = Math.max(size.x, size.z) / 2 || 1;
-    const scale = BOARD_TARGET_HALF / half;
+    const scale = (tune("bh", BOARD_TARGET_HALF) / half) * tune("ms", 1);
 
     // Center on the origin and drop the top face onto y = 0 of the wrapper.
     const centered = new THREE.Group();
-    centered.position.set(-center.x, -box.max.y, -center.z);
+    centered.position.set(-center.x + tune("mx", 0), -box.max.y + tune("my", 0), -center.z + tune("mz", 0));
     centered.add(aligned);
 
     const wrapper = new THREE.Group();
     wrapper.scale.setScalar(scale);
     wrapper.add(centered);
     return wrapper;
+
   }, [scene]);
 
   return (

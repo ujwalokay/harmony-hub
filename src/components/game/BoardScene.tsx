@@ -7,15 +7,120 @@ import { SkeletonUtils } from "three-stdlib";
 import { SIZE, neighbors, rc, type Cell } from "@/lib/baghchal";
 import { useIsMobile } from "@/hooks/use-mobile";
 
+import boardAsset from "@/assets/game-board.glb.asset.json";
+
 const lionAsset = { url: "/models/lion.glb" };
+const boardUrl = boardAsset.url;
 
 const SPACING = 1.15;
 const BOARD_HALF_EXTENT = ((SIZE - 1) / 2) * SPACING;
+/** Board plane height the pieces and nodes live on. */
+const BOARD_Y = 0.41;
+/** How far the GLB board top surface extends past the outer grid ring. */
+const BOARD_TARGET_HALF = BOARD_HALF_EXTENT + 0.62;
 
 export function nodePosition(i: number): [number, number, number] {
   const [r, c] = rc(i);
-  return [(c - 2) * SPACING, 0.41, (r - 2) * SPACING];
+  return [(c - 2) * SPACING, BOARD_Y, (r - 2) * SPACING];
 }
+
+/**
+ * Finds the yaw (radians) that makes the model's footprint axis-aligned, so a
+ * board authored at an arbitrary angle still lines up with the square grid.
+ */
+function bestYaw(object: THREE.Object3D): number {
+  const points: number[] = [];
+  object.updateWorldMatrix(true, true);
+  object.traverse((o) => {
+    const m = o as THREE.Mesh;
+    const pos = m.isMesh ? (m.geometry.getAttribute("position") as THREE.BufferAttribute) : null;
+    if (!pos) return;
+    const step = Math.max(1, Math.floor(pos.count / 4000));
+    const v = new THREE.Vector3();
+    for (let i = 0; i < pos.count; i += step) {
+      v.fromBufferAttribute(pos, i).applyMatrix4(m.matrixWorld);
+      points.push(v.x, v.z);
+    }
+  });
+  if (points.length === 0) return 0;
+
+  let best = 0;
+  let bestArea = Infinity;
+  for (let deg = 0; deg < 90; deg += 0.5) {
+    const t = (deg * Math.PI) / 180;
+    const ca = Math.cos(t);
+    const sa = Math.sin(t);
+    let xmin = Infinity, xmax = -Infinity, zmin = Infinity, zmax = -Infinity;
+    for (let i = 0; i < points.length; i += 2) {
+      const x = points[i]! * ca - points[i + 1]! * sa;
+      const z = points[i]! * sa + points[i + 1]! * ca;
+      if (x < xmin) xmin = x;
+      if (x > xmax) xmax = x;
+      if (z < zmin) zmin = z;
+      if (z > zmax) zmax = z;
+    }
+    const area = (xmax - xmin) * (zmax - zmin);
+    if (area < bestArea) {
+      bestArea = area;
+      best = t;
+    }
+  }
+  return best;
+}
+
+/** The physical Bagh-Chal board (GLB), scaled so its top face is the grid plane. */
+function BoardModel() {
+  const { scene } = useGLTF(boardUrl);
+
+  const model = useMemo(() => {
+    const clone = SkeletonUtils.clone(scene) as THREE.Object3D;
+    clone.traverse((o) => {
+      const m = o as THREE.Mesh;
+      if (m.isMesh) {
+        m.castShadow = true;
+        m.receiveShadow = true;
+      }
+    });
+
+    // Straighten the model, then measure it in that straightened frame.
+    const aligned = new THREE.Group();
+    aligned.rotation.set(
+      (tune("mrx", 0) * Math.PI) / 180,
+      bestYaw(clone) + (tune("mry", 0) * Math.PI) / 180,
+      (tune("mrz", 0) * Math.PI) / 180,
+    );
+    aligned.add(clone);
+    aligned.updateWorldMatrix(true, true);
+
+    const box = new THREE.Box3().setFromObject(aligned);
+    const size = new THREE.Vector3();
+    const center = new THREE.Vector3();
+    box.getSize(size);
+    box.getCenter(center);
+
+    const half = Math.max(size.x, size.z) / 2 || 1;
+    const scale = (tune("bh", BOARD_TARGET_HALF) / half) * tune("ms", 1);
+
+    // Center on the origin and drop the top face onto y = 0 of the wrapper.
+    const centered = new THREE.Group();
+    centered.position.set(-center.x + tune("mx", 0), -box.max.y + tune("my", 0), -center.z + tune("mz", 0));
+    centered.add(aligned);
+
+    const wrapper = new THREE.Group();
+    wrapper.scale.setScalar(scale);
+    wrapper.add(centered);
+    return wrapper;
+
+  }, [scene]);
+
+  return (
+    <group position={[0, BOARD_Y, 0]}>
+      <primitive object={model} />
+    </group>
+  );
+}
+
+
 
 
 /** Smoothly eases a piece to its node and adds a gentle idle bob when selected. */
@@ -130,6 +235,8 @@ function LionModel({ selected }: { selected: boolean }) {
 
 
 useGLTF.preload(lionAsset.url);
+useGLTF.preload(boardUrl);
+
 
 function Tiger({ position, selected }: { position: [number, number, number]; selected: boolean }) {
   return (
@@ -365,11 +472,13 @@ function Scene({
       scale={align.bs}
     >
 
-      {/* Backdrop artwork provides the arena; only a shadow catcher here. */}
+      {/* Backdrop artwork provides the arena; the GLB provides the board. */}
+      <BoardModel />
       <mesh position={[0, 0.4, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
         <planeGeometry args={[40, 40]} />
         <shadowMaterial transparent opacity={0.22} />
       </mesh>
+
 
 
 
@@ -785,7 +894,7 @@ export default function BoardScene(props: BoardSceneProps) {
           maxPolarAngle={Math.PI * 0.48}
           mouseButtons={{ LEFT: THREE.MOUSE.PAN, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: THREE.MOUSE.ROTATE }}
         />
-        <Environment preset="park" />
+        <Environment preset="city" />
       </Canvas>
       {panel ? (
         <AlignPanel align={align} setAlign={setAlign} onClose={() => setPanel(false)} />

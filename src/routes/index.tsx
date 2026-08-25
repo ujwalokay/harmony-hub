@@ -29,8 +29,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import arenaBgAsset from "@/assets/arena-grid-bg.png.asset.json";
+import arenaBgAsset from "@/assets/scifi-arena.png.asset.json";
 const arenaSkyUrl = arenaBgAsset.url;
+
 
 const BoardScene = lazy(() => import("@/components/game/BoardScene"));
 
@@ -136,14 +137,15 @@ function Index() {
   const turnNo = String(game.history.length + 1).padStart(2, "0");
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-gradient-to-b from-[#bfe6ff] via-[#a7dc8b] to-[#7fb44e]">
-      {/* painted landscape backdrop behind the 3D arena */}
+    <main className="relative min-h-screen overflow-hidden bg-[#070b16]">
+      {/* sci-fi arena backdrop behind the 3D board */}
       <div
         className="absolute inset-0 bg-cover bg-center"
         style={{ backgroundImage: `url(${arenaSkyUrl})` }}
         aria-hidden
       />
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/20" aria-hidden />
+      <div className="absolute inset-0 bg-gradient-to-b from-[#0b1226]/40 via-transparent to-[#04070f]/70" aria-hidden />
+
 
 
 
